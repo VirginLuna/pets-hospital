@@ -1,34 +1,57 @@
 import './App.css';
 
-import { useState } from 'react';
+import CssBaseline from '@mui/material/CssBaseline';
+import { Suspense } from 'react';
 import React from 'react';
+import { Route, Routes } from 'react-router-dom';
 
-import viteLogo from '/vite.svg';
+import Middleware from './components/Middleware';
+import Theme from './components/Theme';
+import { themeStore } from './store/theme';
 
-import reactLogo from './assets/react.svg';
+const Index = React.lazy(() => import('./pages/Index'));
+const NotFound = React.lazy(() => import('./pages/NotFound'));
+const Login = React.lazy(() => import('./pages/Login'));
 
 function App() {
-  const [count, setCount] = useState(0);
+  const theme = themeStore((state) => state.theme);
+  const colorScheme = themeStore((state) => state.scheme);
 
   return (
-    <>
-      <div>
-        <a href='https://vitejs.dev' target='_blank' rel='noreferrer'>
-          <img src={viteLogo} className='logo' alt='Vite logo' />
-        </a>
-        <a href='https://react.dev' target='_blank' rel='noreferrer'>
-          <img src={reactLogo} className='logo react' alt='React logo' />
-        </a>
+    <Theme name={theme} scheme={colorScheme}>
+      <CssBaseline />
+      <div className='App'>
+        <Routes>
+          <Route
+            path='/main'
+            element={
+              <Suspense>
+                {/* <Middleware type={{ name: 'anonymous' }}>
+                </Middleware> */}
+                <Index></Index>
+              </Suspense>
+            }
+          ></Route>
+
+          <Route
+            path='*'
+            element={
+              <Middleware type={{ name: 'login' }}>
+                <NotFound></NotFound>
+              </Middleware>
+            }
+          />
+          <Route
+            path='/'
+            element={
+              <Middleware type={{ name: 'anonymous' }}>
+                <Login />
+              </Middleware>
+            }
+          />
+        </Routes>
       </div>
-      <h1>Vite + React</h1>
-      <div className='card'>
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className='read-the-docs'>Click on the Vite and React logos to learn more</p>
-    </>
+    </Theme>
   );
 }
 

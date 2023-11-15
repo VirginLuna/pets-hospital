@@ -2,7 +2,6 @@ import './index.css';
 
 import { zhCN } from '@mui/material/locale';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
 import { HashRouter } from 'react-router-dom';
