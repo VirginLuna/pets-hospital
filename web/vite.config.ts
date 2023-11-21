@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite';
 import reactRefresh from '@vitejs/plugin-react-refresh';
 import * as path from 'path';
+import { defineConfig } from 'vite';
 export default defineConfig({
   plugins: [reactRefresh()],
   // 配置路径别名
@@ -12,13 +12,13 @@ export default defineConfig({
   },
   server: {
     port: 10010,
-    // proxy: {
-    //   "/api": {
-    //     target: "https://yourBaseUrl",
-    //     changeOrigin: true,
-    //     cookieDomainRewrite: "",
-    //     secure: false,
-    //   },
-    // },
+    proxy: {
+      '/api': {
+        target: 'http://rap2api.taobao.org/app/mock/315227',
+        changeOrigin: true,
+        cookieDomainRewrite: '',
+        secure: false,
+      },
+    },
   },
 });

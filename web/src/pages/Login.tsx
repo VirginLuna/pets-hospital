@@ -4,8 +4,10 @@
  * @Description:
  */
 
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
+
+import { login } from '@/api/auth';
 
 const onFinishFailed = (errorInfo: any) => {
   console.log('Failed:', errorInfo);
@@ -20,8 +22,11 @@ type FieldType = {
 export default function Login() {
   const navigate = useNavigate();
   const onFinish = (values: any) => {
-    console.log('Success:', values);
-    navigate('/main');
+    login(values).then((res) => {
+      console.log(res);
+
+      navigate('/main');
+    });
   };
   return (
     <Form
@@ -37,7 +42,7 @@ export default function Login() {
       <Form.Item<FieldType>
         label='Username'
         name='username'
-        rules={[{ required: false, message: 'Please input your username!' }]}
+        rules={[{ required: true, message: 'Please input your username!' }]}
       >
         <Input />
       </Form.Item>
@@ -45,13 +50,9 @@ export default function Login() {
       <Form.Item<FieldType>
         label='Password'
         name='password'
-        rules={[{ required: false, message: 'Please input your password!' }]}
+        rules={[{ required: true, message: 'Please input your password!' }]}
       >
         <Input.Password />
-      </Form.Item>
-
-      <Form.Item<FieldType> name='remember' valuePropName='checked' wrapperCol={{ offset: 8, span: 16 }}>
-        <Checkbox>Remember me</Checkbox>
       </Form.Item>
 
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
