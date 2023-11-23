@@ -1,12 +1,19 @@
 import './App.css';
 
+import { Suspense } from 'react';
 import { useRoutes } from 'react-router-dom';
 
-import route from './route';
+import { RouterBeforeEach, routes } from './route';
 
 function App() {
-  const element = useRoutes(route);
-  return <div className='App'>{element}</div>;
+  const element = useRoutes(routes);
+  return (
+    <div className='App'>
+      <Suspense>
+        <RouterBeforeEach>{element}</RouterBeforeEach>
+      </Suspense>
+    </div>
+  );
 }
 
 export default App;

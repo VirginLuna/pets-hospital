@@ -8,10 +8,7 @@ import { Button, Form, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
 import { login } from '@/api/auth';
-
-const onFinishFailed = (errorInfo: any) => {
-  console.log('Failed:', errorInfo);
-};
+import useLoginStore from '@/store/user';
 
 type FieldType = {
   username?: string;
@@ -21,10 +18,11 @@ type FieldType = {
 
 export default function Login() {
   const navigate = useNavigate();
+  const setIsLogin = useLoginStore((state: any) => state.setIsLogin);
   const onFinish = (values: any) => {
     login(values).then((res) => {
-      console.log(res);
-
+      sessionStorage.setItem('token', res.data.token);
+      setIsLogin(true);
       navigate('/main');
     });
   };
@@ -36,7 +34,6 @@ export default function Login() {
       style={{ maxWidth: 600 }}
       initialValues={{ remember: true }}
       onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
       autoComplete='off'
     >
       <Form.Item<FieldType>

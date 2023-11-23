@@ -1,37 +1,69 @@
-import { LaptopOutlined } from '@ant-design/icons';
 import { Layout, Menu, MenuProps } from 'antd';
-import React from 'react';
+import { cloneDeep, head, List, toString } from 'lodash';
+import { useCallback, useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 
+import http from '@/api/http';
+
 import styles from './Index.module.less';
-
 type MenuItem = Required<MenuProps>['items'][number];
-
-const { Header, Content, Sider } = Layout;
 
 function getItem(
   label: React.ReactNode,
-  key: React.Key,
+  key?: React.Key | null,
   icon?: React.ReactNode,
   children?: MenuItem[],
-  type?: 'group',
 ): MenuItem {
   return {
     key,
     icon,
     children,
     label,
-    type,
   } as MenuItem;
 }
 
-const items = [getItem('记账', '/main/home', <LaptopOutlined />)];
+const { Header, Content, Sider } = Layout;
 
 const Index = () => {
+  const [menu, setMenu] = useState([]);
+  const [openKey] = useState<Array<any>>([]);
+  const [selectKey] = useState<Array<any>>([]);
   const navigate = useNavigate();
+
   const onClick = (e: { key: any }) => {
     navigate(e.key);
   };
+
+  const findOpenKey = (nav: List<any> | null | undefined) => {
+    const firstElement = head(nav) as any;
+    if (firstElement.children && firstElement.children.length) {
+      return toString(firstElement.key);
+    }
+  };
+
+  const findSelectKey = (nav: List<any> | null | undefined): any => {
+    const firstElement = head(nav) as any;
+    if (firstElement.children && firstElement.children.length) {
+      return findSelectKey(firstElement.children);
+    } else {
+      return toString(firstElement.key);
+    }
+  };
+
+  const getOpenKey = useCallback(() => openKey, [openKey]);
+  const getSelectKey = useCallback(() => selectKey, [selectKey]);
+
+  useEffect(() => {
+    http.get('/nav').then((res) => {
+      const nav = cloneDeep(res.data.items);
+      setMenu(nav);
+      const defaultOpenKey = findOpenKey(nav);
+      openKey.push(defaultOpenKey);
+      const defaultSelectKey = findSelectKey(nav);
+      selectKey.push(defaultSelectKey);
+    });
+  }, []);
+
   return (
     <Layout>
       <Header className={styles.header}>
@@ -42,10 +74,10 @@ const Index = () => {
         <Sider width={200}>
           <Menu
             mode='inline'
-            defaultSelectedKeys={['1']}
-            defaultOpenKeys={['sub1']}
+            defaultSelectedKeys={getSelectKey()}
+            defaultOpenKeys={getOpenKey()}
             style={{ height: '100%', borderRight: 0 }}
-            items={items}
+            items={menu}
             onClick={onClick}
           />
         </Sider>
